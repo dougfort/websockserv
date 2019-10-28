@@ -1,4 +1,4 @@
 #!/bin/bash
 set -euxo pipefail
 
-docker build -t dougfort/websockserv:latest -f Dockerfile .
+docker build -t deciphernow/websockserv:latest -f Dockerfile .
