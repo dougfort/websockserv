@@ -5,16 +5,15 @@
 package main
 
 import (
-	"flag"
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/websocket"
 )
 
-var addr = flag.String("addr", "localhost:8080", "http service address")
-var prefix = flag.String("prefix", "/services/websockserv/latest/", "prefix to '/echo' URI")
+const defaultAddr = "localhost:8080"
 
 func echo(w http.ResponseWriter, r *http.Request) {
 	var upgrader = websocket.Upgrader{
@@ -44,17 +43,22 @@ func echo(w http.ResponseWriter, r *http.Request) {
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
-	if err := homeTemplate.Execute(w, "ws://"+r.Host+*prefix+"/echo"); err != nil {
+	prefix := os.Getenv("WEBSOCKSERV_PREFIX")
+	if err := homeTemplate.Execute(w, "ws://"+r.Host+prefix+"/echo"); err != nil {
 		log.Fatalf("homeTemplate.Execute failed: %v", err)
 	}
 }
 
 func main() {
-	flag.Parse()
+	addr := os.Getenv("WEBSOCKSERV_ADDR")
+	if addr == "" {
+		addr = defaultAddr
+	}
 	log.SetFlags(0)
+	log.Printf("websockserv: addr = %s; prefix = '%s'", addr, os.Getenv("WEBSOCKSERV_PREFIX"))
 	http.HandleFunc("/echo", echo)
 	http.HandleFunc("/", home)
-	log.Fatal(http.ListenAndServe(*addr, nil))
+	log.Fatal(http.ListenAndServe(addr, nil))
 }
 
 var homeTemplate = template.Must(template.New("").Parse(`

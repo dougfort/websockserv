@@ -18,11 +18,10 @@ RUN apk update && apk upgrade && \
 WORKDIR /websockserv
 
 COPY --from=builder /go/src/github.com/dougfort/websockserv/websockserv /usr/local/bin/websockserv
-COPY --from=builder /go/src/github.com/dougfort/websockserv/websockserv.sh /usr/local/bin/websockserv.sh
-RUN chmod +x /usr/local/bin/websockserv.sh
+RUN chmod +x /usr/local/bin/websockserv
 
 RUN chown -R 0:0 /websockserv && chgrp -R 0 /websockserv && chmod -R g=u /websockserv
 
 USER 1000
 
-CMD ["/usr/local/bin/websockserv.sh"]
+CMD ["/usr/local/bin/websockserv"]
