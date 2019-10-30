@@ -14,6 +14,7 @@ import (
 )
 
 var addr = flag.String("addr", "localhost:8080", "http service address")
+var prefix = flag.String("prefix", "/services/websockserv/latest/", "prefix to '/echo' URI")
 
 func echo(w http.ResponseWriter, r *http.Request) {
 	var upgrader = websocket.Upgrader{
@@ -43,7 +44,7 @@ func echo(w http.ResponseWriter, r *http.Request) {
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
-	if err := homeTemplate.Execute(w, "ws://"+r.Host+"/echo"); err != nil {
+	if err := homeTemplate.Execute(w, "ws://"+r.Host+*prefix+"/echo"); err != nil {
 		log.Fatalf("homeTemplate.Execute failed: %v", err)
 	}
 }
